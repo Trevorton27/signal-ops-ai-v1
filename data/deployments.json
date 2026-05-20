@@ -1,0 +1,86 @@
+[
+  {
+    "id": "deploy_001",
+    "service": "order-service",
+    "version": "v2.4.1",
+    "timestamp": "2024-01-15T13:30:00Z",
+    "author": "ci-bot",
+    "environment": "production",
+    "region": "us-east-1",
+    "status": "successful",
+    "changedEnvVars": ["DB_POOL_MAX", "QUERY_TIMEOUT_MS"],
+    "notes": "Increased default query timeout from 3000ms to 10000ms to handle heavy reporting queries."
+  },
+  {
+    "id": "deploy_002",
+    "service": "auth-service",
+    "version": "v1.9.5",
+    "timestamp": "2024-01-14T07:00:00Z",
+    "author": "infra-team",
+    "environment": "production",
+    "region": "eu-west-1",
+    "status": "partial_failure",
+    "changedEnvVars": ["SAML_CERT_PATH", "JWT_SIGNING_KEY_ID"],
+    "notes": "Certificate rotation as part of quarterly security maintenance. EU cluster update failed silently."
+  },
+  {
+    "id": "deploy_003",
+    "service": "database-proxy",
+    "version": "pgbouncer-1.21.0",
+    "timestamp": "2024-01-10T06:00:00Z",
+    "author": "platform-team",
+    "environment": "production",
+    "region": "us-west-2",
+    "status": "successful",
+    "changedEnvVars": ["MAX_CLIENT_CONN", "DEFAULT_POOL_SIZE"],
+    "notes": "PgBouncer upgrade. Note: DEFAULT_POOL_SIZE was NOT updated - still set to 25. Customer scaled to 20 app instances."
+  },
+  {
+    "id": "deploy_004",
+    "service": "webhook-dispatcher",
+    "version": "v3.1.2",
+    "timestamp": "2024-01-12T10:00:00Z",
+    "author": "ci-bot",
+    "environment": "production",
+    "region": "us-east-1",
+    "status": "successful",
+    "changedEnvVars": ["WEBHOOK_RETRY_ENABLED", "HMAC_ALGORITHM"],
+    "notes": "Enabled configurable HMAC algorithm. Existing webhooks default to sha256. Signature header name changed from X-Webhook-Sig to X-Signature-256."
+  },
+  {
+    "id": "deploy_005",
+    "service": "billing-service",
+    "version": "v4.0.3",
+    "timestamp": "2024-01-14T09:00:00Z",
+    "author": "platform-team",
+    "environment": "production",
+    "region": "all",
+    "status": "successful",
+    "changedEnvVars": ["KEY_PROPAGATION_STRATEGY", "KEY_ACTIVATION_DELAY_MS"],
+    "notes": "New API key rotation flow. Keys are now async-activated with eventual consistency across regions (5-10 min propagation)."
+  },
+  {
+    "id": "deploy_006",
+    "service": "deployment-github-action",
+    "version": "v3.2.0",
+    "timestamp": "2024-01-13T00:00:00Z",
+    "author": "devtools-team",
+    "environment": "public",
+    "region": "global",
+    "status": "successful",
+    "changedEnvVars": [],
+    "notes": "Breaking change: SECRETS_MANAGER_KEY is now required. Previously optional, now mandatory for secret injection. Migration guide published."
+  },
+  {
+    "id": "deploy_007",
+    "service": "rate-limiter",
+    "version": "v2.2.0",
+    "timestamp": "2024-01-13T00:00:00Z",
+    "author": "ci-bot",
+    "environment": "production",
+    "region": "us-east-1",
+    "status": "successful",
+    "changedEnvVars": ["BURST_WINDOW_MS", "BURST_MULTIPLIER"],
+    "notes": "Added burst protection feature. Known issue: race condition in burst counter introduced in this version."
+  }
+]

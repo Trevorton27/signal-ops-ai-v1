@@ -1,0 +1,145 @@
+[
+  {
+    "id": "log_001",
+    "timestamp": "2024-01-15T14:28:00Z",
+    "level": "ERROR",
+    "service": "api-gateway",
+    "customerId": "cust_001",
+    "message": "Upstream timeout on /v2/orders - backend service did not respond within 5000ms",
+    "traceId": "trace_abc123",
+    "spanId": "span_001",
+    "metadata": { "endpoint": "/v2/orders", "method": "POST", "statusCode": 504 }
+  },
+  {
+    "id": "log_002",
+    "timestamp": "2024-01-15T14:29:15Z",
+    "level": "ERROR",
+    "service": "order-service",
+    "customerId": "cust_001",
+    "message": "Database query exceeded timeout threshold - query took 12340ms",
+    "traceId": "trace_abc123",
+    "spanId": "span_002",
+    "metadata": { "query": "SELECT * FROM orders WHERE customer_id = ?", "timeout": 10000, "actual": 12340 }
+  },
+  {
+    "id": "log_003",
+    "timestamp": "2024-01-15T14:30:00Z",
+    "level": "WARN",
+    "service": "order-service",
+    "customerId": "cust_001",
+    "message": "Connection pool utilization at 95% - approaching limit of 100 connections",
+    "traceId": "trace_def456",
+    "spanId": "span_003",
+    "metadata": { "active": 95, "idle": 5, "waiting": 23, "max": 100 }
+  },
+  {
+    "id": "log_004",
+    "timestamp": "2024-01-15T09:05:00Z",
+    "level": "ERROR",
+    "service": "auth-service",
+    "customerId": "cust_002",
+    "message": "SAML assertion signature validation failed - certificate mismatch",
+    "traceId": "trace_ghi789",
+    "spanId": "span_004",
+    "metadata": { "idp": "okta", "region": "eu-west-1", "userId": "user_eu_045", "errorCode": "SAML_CERT_INVALID" }
+  },
+  {
+    "id": "log_005",
+    "timestamp": "2024-01-15T09:06:30Z",
+    "level": "ERROR",
+    "service": "auth-service",
+    "customerId": "cust_002",
+    "message": "JWT token validation failed - token signed with deprecated key",
+    "traceId": "trace_ghi789",
+    "spanId": "span_005",
+    "metadata": { "keyId": "key_v1_2024", "expectedKeyId": "key_v2_2024", "region": "eu-west-1" }
+  },
+  {
+    "id": "log_006",
+    "timestamp": "2024-01-10T09:15:00Z",
+    "level": "ERROR",
+    "service": "database-proxy",
+    "customerId": "cust_003",
+    "message": "Connection pool exhausted - all connections in use",
+    "traceId": "trace_jkl012",
+    "spanId": "span_006",
+    "metadata": { "pool": "primary", "max": 25, "active": 25, "waiting": 47, "database": "healthflow_prod" }
+  },
+  {
+    "id": "log_007",
+    "timestamp": "2024-01-10T09:18:45Z",
+    "level": "ERROR",
+    "service": "database-proxy",
+    "customerId": "cust_003",
+    "message": "PgBouncer client timeout - request waited 30s for available connection",
+    "traceId": "trace_jkl012",
+    "spanId": "span_007",
+    "metadata": { "client": "app-instance-14", "waitTime": 30000, "poolMode": "transaction" }
+  },
+  {
+    "id": "log_008",
+    "timestamp": "2024-01-12T16:00:00Z",
+    "level": "WARN",
+    "service": "webhook-dispatcher",
+    "customerId": "cust_007",
+    "message": "Webhook delivery attempt failed - endpoint returned 500",
+    "traceId": "trace_mno345",
+    "spanId": "span_008",
+    "metadata": { "webhookId": "wh_xyz", "url": "https://edtech-solutions.com/webhooks", "attempt": 1, "statusCode": 500 }
+  },
+  {
+    "id": "log_009",
+    "timestamp": "2024-01-12T16:02:00Z",
+    "level": "ERROR",
+    "service": "webhook-dispatcher",
+    "customerId": "cust_007",
+    "message": "Webhook signature verification bypass - hmac header missing from request",
+    "traceId": "trace_mno345",
+    "spanId": "span_009",
+    "metadata": { "webhookId": "wh_xyz", "signatureHeader": null, "configuredAlgorithm": "sha256" }
+  },
+  {
+    "id": "log_010",
+    "timestamp": "2024-01-14T11:00:00Z",
+    "level": "ERROR",
+    "service": "billing-service",
+    "customerId": "cust_005",
+    "message": "API key authentication failed - key not found in keystore",
+    "traceId": "trace_pqr678",
+    "spanId": "span_010",
+    "metadata": { "keyPrefix": "bk_live_xxx", "reason": "KEY_ROTATED_PENDING_ACTIVATION", "gracePeriodExpired": false }
+  },
+  {
+    "id": "log_011",
+    "timestamp": "2024-01-14T11:01:30Z",
+    "level": "WARN",
+    "service": "billing-service",
+    "customerId": "cust_005",
+    "message": "New API key in propagation delay - replication to all regions not complete",
+    "traceId": "trace_pqr678",
+    "spanId": "span_011",
+    "metadata": { "regionsComplete": ["us-east-1"], "regionsPending": ["eu-central-1", "ap-southeast-1"], "estimatedPropagation": "5-10 minutes" }
+  },
+  {
+    "id": "log_012",
+    "timestamp": "2024-01-13T10:00:00Z",
+    "level": "WARN",
+    "service": "rate-limiter",
+    "customerId": "cust_004",
+    "message": "Rate limit threshold reached - counter may be double-counting burst requests",
+    "traceId": "trace_stu901",
+    "spanId": "span_012",
+    "metadata": { "plan": "free", "limit": 1000, "counted": 987, "actual": 203, "windowMs": 3600000, "bug": "RATE_LIMITER_BURST_DUPLICATE" }
+  },
+  {
+    "id": "log_013",
+    "timestamp": "2024-01-15T08:00:00Z",
+    "level": "ERROR",
+    "service": "deployment-service",
+    "customerId": "cust_006",
+    "message": "CI/CD pipeline failed - SECRETS_MANAGER_KEY environment variable not found",
+    "traceId": "trace_vwx234",
+    "spanId": "span_013",
+    "metadata": { "action": "inject-env-vars", "actionVersion": "3.2.0", "missingKey": "SECRETS_MANAGER_KEY", "pipeline": "main-deploy" }
+  }
+]

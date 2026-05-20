@@ -1,0 +1,24 @@
+[
+  {
+    "traceId": "trace_abc123",
+    "spans": [
+      { "spanId": "span_001", "parentSpanId": null, "service": "api-gateway", "operation": "POST /v2/orders", "startTime": "2024-01-15T14:28:00Z", "duration": 5120, "status": "ERROR", "tags": { "http.status_code": 504, "http.method": "POST" } },
+      { "spanId": "span_002", "parentSpanId": "span_001", "service": "order-service", "operation": "processOrder", "startTime": "2024-01-15T14:28:01Z", "duration": 12340, "status": "ERROR", "tags": { "db.type": "postgresql", "db.statement": "SELECT" } },
+      { "spanId": "span_003", "parentSpanId": "span_002", "service": "database-proxy", "operation": "pgbouncer.query", "startTime": "2024-01-15T14:28:01Z", "duration": 12300, "status": "SLOW", "tags": { "db.rows": 0, "pool.wait_ms": 8400 } }
+    ]
+  },
+  {
+    "traceId": "trace_ghi789",
+    "spans": [
+      { "spanId": "span_004", "parentSpanId": null, "service": "auth-service", "operation": "POST /auth/saml/callback", "startTime": "2024-01-15T09:05:00Z", "duration": 45, "status": "ERROR", "tags": { "saml.idp": "okta", "user.region": "eu-west-1" } },
+      { "spanId": "span_005", "parentSpanId": "span_004", "service": "auth-service", "operation": "validateSamlAssertion", "startTime": "2024-01-15T09:05:00Z", "duration": 40, "status": "ERROR", "tags": { "error.type": "CertificateMismatchError" } }
+    ]
+  },
+  {
+    "traceId": "trace_jkl012",
+    "spans": [
+      { "spanId": "span_006", "parentSpanId": null, "service": "api-gateway", "operation": "GET /api/patient-records", "startTime": "2024-01-10T09:15:00Z", "duration": 30200, "status": "ERROR", "tags": { "http.status_code": 503 } },
+      { "spanId": "span_007", "parentSpanId": "span_006", "service": "database-proxy", "operation": "pgbouncer.acquire_connection", "startTime": "2024-01-10T09:15:00Z", "duration": 30000, "status": "TIMEOUT", "tags": { "pool.size": 25, "pool.active": 25, "pool.waiting": 47 } }
+    ]
+  }
+]

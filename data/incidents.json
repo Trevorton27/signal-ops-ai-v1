@@ -1,0 +1,41 @@
+[
+  {
+    "id": "inc_001",
+    "title": "US-EAST-1 Database Cluster Degradation",
+    "status": "resolved",
+    "severity": "high",
+    "affectedProducts": ["order-service", "billing-service", "api-gateway"],
+    "affectedRegions": ["us-east-1"],
+    "startTime": "2024-01-15T13:00:00Z",
+    "endTime": "2024-01-15T16:45:00Z",
+    "rootCause": "Primary database replica fell behind due to high write load, causing read queries to time out on the lagging replica.",
+    "resolution": "Promoted a healthy replica and redistributed read traffic. Implemented read replica lag monitoring.",
+    "customerImpact": "Intermittent 500 errors and slow responses for customers in us-east-1 affecting order processing."
+  },
+  {
+    "id": "inc_002",
+    "title": "EU Authentication Certificate Rotation Failure",
+    "status": "resolved",
+    "severity": "critical",
+    "affectedProducts": ["auth-service"],
+    "affectedRegions": ["eu-west-1"],
+    "startTime": "2024-01-14T08:00:00Z",
+    "endTime": "2024-01-14T14:30:00Z",
+    "rootCause": "Automated certificate rotation script failed to update the SAML signing certificate in the EU-WEST-1 regional auth cluster. The old certificate was retired on schedule, leaving the region unable to validate SAML assertions.",
+    "resolution": "Manually deployed updated certificate to EU cluster. Fixed automation script to verify propagation before retiring old certificate.",
+    "customerImpact": "EU-based users unable to authenticate via SAML SSO for approximately 6.5 hours."
+  },
+  {
+    "id": "inc_003",
+    "title": "Rate Limiter Double-Counting Bug - Free Tier",
+    "status": "investigating",
+    "severity": "medium",
+    "affectedProducts": ["rate-limiter"],
+    "affectedRegions": ["us-east-1", "eu-west-1"],
+    "startTime": "2024-01-13T00:00:00Z",
+    "endTime": null,
+    "rootCause": "A race condition in the burst request counting logic causes rapid consecutive requests within the same 100ms window to be counted 2-4x their actual count.",
+    "resolution": "Patch in development. Workaround: affected customers can temporarily increase their rate limit window to 10 minutes.",
+    "customerImpact": "Free tier customers hitting rate limits significantly earlier than expected based on actual usage."
+  }
+]

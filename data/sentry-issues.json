@@ -1,0 +1,38 @@
+[
+  {
+    "id": "sentry_001",
+    "fingerprint": ["order-service", "DatabaseTimeoutError", "/v2/orders"],
+    "title": "DatabaseTimeoutError: Query exceeded 10000ms timeout",
+    "culprit": "order-service/src/handlers/orderHandler.ts",
+    "level": "error",
+    "count": 847,
+    "firstSeen": "2024-01-15T14:28:00Z",
+    "lastSeen": "2024-01-15T17:00:00Z",
+    "affectedUsers": 234,
+    "tags": { "environment": "production", "region": "us-east-1", "service": "order-service" }
+  },
+  {
+    "id": "sentry_002",
+    "fingerprint": ["auth-service", "SAMLValidationError", "eu-west-1"],
+    "title": "SAMLValidationError: Certificate signature invalid",
+    "culprit": "auth-service/src/saml/validator.ts",
+    "level": "error",
+    "count": 1243,
+    "firstSeen": "2024-01-14T08:00:00Z",
+    "lastSeen": "2024-01-14T14:30:00Z",
+    "affectedUsers": 450,
+    "tags": { "environment": "production", "region": "eu-west-1", "service": "auth-service" }
+  },
+  {
+    "id": "sentry_003",
+    "fingerprint": ["webhook-dispatcher", "SignatureVerificationError"],
+    "title": "SignatureVerificationError: HMAC header X-Webhook-Sig not present",
+    "culprit": "webhook-dispatcher/src/middleware/signatureVerifier.ts",
+    "level": "warning",
+    "count": 392,
+    "firstSeen": "2024-01-12T16:00:00Z",
+    "lastSeen": "2024-01-15T18:00:00Z",
+    "affectedUsers": 0,
+    "tags": { "environment": "production", "service": "webhook-dispatcher" }
+  }
+]

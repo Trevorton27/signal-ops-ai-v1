@@ -1,0 +1,58 @@
+[
+  {
+    "externalId": "TKT-001",
+    "title": "API returning 500 errors intermittently on /v2/orders endpoint",
+    "description": "Our integration with the /v2/orders endpoint has been returning HTTP 500 errors approximately 15-20% of the time since yesterday afternoon. The errors started around 14:30 UTC. We're on the Enterprise plan and this is blocking our checkout flow. Error message: 'Internal server error - upstream timeout'. Our team has verified it's not on our side.",
+    "status": "open",
+    "severity": "critical",
+    "customerId": "cust_001"
+  },
+  {
+    "externalId": "TKT-002",
+    "title": "SAML SSO authentication failing for EU users after token rotation",
+    "description": "Following the scheduled token rotation last Tuesday, our EU-based employees can no longer authenticate via SAML SSO. They get 'SAML assertion signature validation failed' error. US users on the same IdP are unaffected. We have 450 EU employees blocked from the platform.",
+    "status": "open",
+    "severity": "critical",
+    "customerId": "cust_002"
+  },
+  {
+    "externalId": "TKT-003",
+    "title": "Database connection pool exhaustion during peak hours",
+    "description": "Every day between 09:00-11:00 PST, we see connection pool exhaustion errors in our application logs. The error is 'too many connections' followed by request timeouts. This started 5 days ago after we scaled up to 20 application instances. We're using the default connection pool settings.",
+    "status": "in_progress",
+    "severity": "high",
+    "customerId": "cust_003"
+  },
+  {
+    "externalId": "TKT-004",
+    "title": "Webhook events not being delivered - 30% failure rate",
+    "description": "Our webhook endpoint is configured correctly and was working fine until 3 days ago. Now approximately 30% of events fail to deliver. The retry mechanism doesn't seem to be working either - we're not seeing the expected retry attempts in our logs. Webhook signature verification is enabled.",
+    "status": "open",
+    "severity": "high",
+    "customerId": "cust_007"
+  },
+  {
+    "externalId": "TKT-005",
+    "title": "Billing API key rotation causing authentication failures",
+    "description": "We attempted to rotate our billing API key via the dashboard as recommended, but the new key is returning 401 Unauthorized errors. The old key is now disabled per the rotation process. We can't process any payments and our monthly billing run is tomorrow.",
+    "status": "open",
+    "severity": "critical",
+    "customerId": "cust_005"
+  },
+  {
+    "externalId": "TKT-006",
+    "title": "Rate limiting hitting free tier unexpectedly",
+    "description": "We're on the free tier and understand the 1,000 req/hour limit. However, we're hitting the rate limit at around 200 requests. Our usage dashboard shows we're well under the limit but the API keeps returning 429 responses. This seems like a counting error.",
+    "status": "open",
+    "severity": "medium",
+    "customerId": "cust_004"
+  },
+  {
+    "externalId": "TKT-007",
+    "title": "Deployment pipeline failing after recent CI/CD update",
+    "description": "After updating our CI/CD pipeline to use the latest version of your deployment GitHub Action (v3.2.0), our deployments are failing at the 'inject environment variables' step. The error says 'SECRETS_MANAGER_KEY not found in environment context'. This worked fine with v3.1.x.",
+    "status": "open",
+    "severity": "medium",
+    "customerId": "cust_006"
+  }
+]

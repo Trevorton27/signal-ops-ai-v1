@@ -1,0 +1,102 @@
+[
+  {
+    "id": "cust_001",
+    "name": "Sarah Chen",
+    "email": "sarah.chen@acmecorp.com",
+    "company": "Acme Corp",
+    "plan": "enterprise",
+    "region": "us-east-1",
+    "industry": "E-commerce",
+    "accountAge": 36
+  },
+  {
+    "id": "cust_002",
+    "name": "Marcus Thompson",
+    "email": "m.thompson@fintech-ventures.io",
+    "company": "FinTech Ventures",
+    "plan": "pro",
+    "region": "eu-west-1",
+    "industry": "Financial Services",
+    "accountAge": 18
+  },
+  {
+    "id": "cust_003",
+    "name": "Priya Patel",
+    "email": "priya@healthflow.com",
+    "company": "HealthFlow",
+    "plan": "enterprise",
+    "region": "us-west-2",
+    "industry": "Healthcare",
+    "accountAge": 24
+  },
+  {
+    "id": "cust_004",
+    "name": "James O'Brien",
+    "email": "james@startupxyz.com",
+    "company": "StartupXYZ",
+    "plan": "free",
+    "region": "us-east-1",
+    "industry": "SaaS",
+    "accountAge": 3
+  },
+  {
+    "id": "cust_005",
+    "name": "Elena Vasquez",
+    "email": "elena.v@globalretail.com",
+    "company": "Global Retail Inc",
+    "plan": "enterprise",
+    "region": "eu-central-1",
+    "industry": "Retail",
+    "accountAge": 48
+  },
+  {
+    "id": "cust_006",
+    "name": "David Kim",
+    "email": "d.kim@logisticspro.net",
+    "company": "LogisticsPro",
+    "plan": "pro",
+    "region": "ap-southeast-1",
+    "industry": "Logistics",
+    "accountAge": 12
+  },
+  {
+    "id": "cust_007",
+    "name": "Amara Johnson",
+    "email": "amara@edtech-solutions.com",
+    "company": "EdTech Solutions",
+    "plan": "pro",
+    "region": "us-east-1",
+    "industry": "Education",
+    "accountAge": 9
+  },
+  {
+    "id": "cust_008",
+    "name": "Roberto Fernandez",
+    "email": "roberto@media-stream.tv",
+    "company": "MediaStream",
+    "plan": "enterprise",
+    "region": "us-west-2",
+    "industry": "Media & Entertainment",
+    "accountAge": 30
+  },
+  {
+    "id": "cust_009",
+    "name": "Lisa Nguyen",
+    "email": "lisa.nguyen@cybersecure.io",
+    "company": "CyberSecure",
+    "plan": "pro",
+    "region": "us-east-1",
+    "industry": "Cybersecurity",
+    "accountAge": 15
+  },
+  {
+    "id": "cust_010",
+    "name": "Omar Hassan",
+    "email": "omar@agritech-global.com",
+    "company": "AgriTech Global",
+    "plan": "free",
+    "region": "eu-west-1",
+    "industry": "Agriculture",
+    "accountAge": 2
+  }
+]

@@ -1,0 +1,83 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [pgvector(map: "vector")]
+}
+
+model Customer {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  company      String
+  plan         String   // "free" | "pro" | "enterprise"
+  region       String   // "us-east-1" | "eu-west-1" | etc.
+  industry     String
+  accountAge   Int      // months
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  tickets      Ticket[]
+}
+
+model Ticket {
+  id          String   @id @default(cuid())
+  externalId  String?  @unique // for GitHub Issues integration
+  title       String
+  description String
+  status      String   @default("open")  // "open" | "in_progress" | "resolved" | "archived"
+  severity    String   @default("medium") // "critical" | "high" | "medium" | "low"
+  category    String?
+  product     String?
+  customerId  String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  customer     Customer          @relation(fields: [customerId], references: [id])
+  investigations InvestigationRun[]
+}
+
+model InvestigationRun {
+  id           String   @id @default(cuid())
+  ticketId     String
+  status       String   @default("pending") // "pending" | "running" | "complete" | "failed"
+  hypotheses   Json?
+  summary      String?  // drafted customer reply
+  escalationNote String?
+  startedAt    DateTime @default(now())
+  completedAt  DateTime?
+  errorMessage String?
+
+  ticket       Ticket       @relation(fields: [ticketId], references: [id])
+  steps        AgentStep[]
+}
+
+model AgentStep {
+  id               String   @id @default(cuid())
+  investigationRunId String
+  agentName        String
+  status           String   @default("pending") // "pending" | "running" | "complete" | "failed"
+  input            Json?
+  output           Json?
+  errorMessage     String?
+  startedAt        DateTime @default(now())
+  completedAt      DateTime?
+  durationMs       Int?
+
+  investigationRun InvestigationRun @relation(fields: [investigationRunId], references: [id])
+}
+
+model KnowledgeChunk {
+  id          String                       @id @default(cuid())
+  sourcePath  String
+  chunkIndex  Int
+  content     String
+  embedding   Unsupported("vector(1536)")?
+  createdAt   DateTime                     @default(now())
+
+  @@unique([sourcePath, chunkIndex])
+}
