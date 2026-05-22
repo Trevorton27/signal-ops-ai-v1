@@ -48,8 +48,8 @@ export function KpiCards({ openTickets, criticalTickets, investigationsToday, av
           <CardContent className="p-6">
             <div className="flex items-start justify-between">
               <div>
-                <p className="text-sm text-slate-500">{card.label}</p>
-                <p className="text-3xl font-bold text-slate-900 mt-1">{card.value}</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400">{card.label}</p>
+                <p className="text-3xl font-bold text-slate-900 dark:text-slate-100 mt-1">{card.value}</p>
               </div>
               <div className={`w-10 h-10 rounded-lg ${card.bg} flex items-center justify-center`}>
                 <card.icon className={`w-5 h-5 ${card.color}`} />

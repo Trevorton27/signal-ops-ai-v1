@@ -21,7 +21,7 @@ export function TicketDetail({ ticket }: { ticket: TicketWithCustomer }) {
       <Card>
         <CardHeader className="pb-3">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-xs font-mono text-slate-400">{ticket.externalId}</span>
+            <span className="text-xs font-mono text-slate-400 dark:text-slate-500">{ticket.externalId}</span>
             <SeverityBadge severity={ticket.severity} />
             <Badge
               variant="outline"
@@ -37,10 +37,10 @@ export function TicketDetail({ ticket }: { ticket: TicketWithCustomer }) {
           </div>
         </CardHeader>
         <CardContent className="pt-0">
-          <p className="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap">
+          <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-wrap">
             {ticket.description}
           </p>
-          <p className="text-xs text-slate-400 mt-3">
+          <p className="text-xs text-slate-400 dark:text-slate-500 mt-3">
             Submitted {formatRelativeTime(ticket.createdAt)}
           </p>
         </CardContent>
@@ -53,28 +53,28 @@ export function TicketDetail({ ticket }: { ticket: TicketWithCustomer }) {
         </CardHeader>
         <CardContent className="pt-0 space-y-3">
           <div>
-            <p className="text-sm font-medium text-slate-900">{ticket.customer.name}</p>
-            <p className="text-xs text-slate-500">{ticket.customer.email}</p>
+            <p className="text-sm font-medium text-slate-900 dark:text-slate-100">{ticket.customer.name}</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400">{ticket.customer.email}</p>
           </div>
-          <div className="grid grid-cols-2 gap-3 text-xs text-slate-600">
+          <div className="grid grid-cols-2 gap-3 text-xs text-slate-600 dark:text-slate-400">
             <div className="flex items-center gap-1.5">
-              <Building2 className="w-3.5 h-3.5 text-slate-400" />
+              <Building2 className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" />
               {ticket.customer.company}
             </div>
             <div className="flex items-center gap-1.5">
-              <CreditCard className="w-3.5 h-3.5 text-slate-400" />
+              <CreditCard className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" />
               <span className="capitalize">{ticket.customer.plan} plan</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <MapPin className="w-3.5 h-3.5 text-slate-400" />
+              <MapPin className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" />
               {ticket.customer.region}
             </div>
             <div className="flex items-center gap-1.5">
-              <Calendar className="w-3.5 h-3.5 text-slate-400" />
+              <Calendar className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" />
               {ticket.customer.accountAge}mo account
             </div>
           </div>
-          <div className="text-xs text-slate-500">
+          <div className="text-xs text-slate-500 dark:text-slate-400">
             Industry: {ticket.customer.industry}
           </div>
         </CardContent>

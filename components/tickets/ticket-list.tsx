@@ -41,7 +41,7 @@ export function TicketList({ tickets }: { tickets: TicketWithRelations[] }) {
                 <div className="flex items-start gap-4">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-xs font-mono text-slate-400">{ticket.externalId}</span>
+                      <span className="text-xs font-mono text-slate-400 dark:text-slate-500">{ticket.externalId}</span>
                       <SeverityBadge severity={ticket.severity} />
                       <Badge
                         variant="outline"
@@ -50,10 +50,10 @@ export function TicketList({ tickets }: { tickets: TicketWithRelations[] }) {
                         {ticket.status.replace("_", " ")}
                       </Badge>
                     </div>
-                    <p className="text-sm font-medium text-slate-900 mt-1 truncate">
+                    <p className="text-sm font-medium text-slate-900 dark:text-slate-100 mt-1 truncate">
                       {ticket.title}
                     </p>
-                    <p className="text-xs text-slate-500 mt-0.5">
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                       {ticket.customer.company} · {ticket.customer.plan} plan · {ticket.customer.region}
                     </p>
                   </div>

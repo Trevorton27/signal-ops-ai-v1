@@ -20,10 +20,10 @@ async function getRun(runId: string) {
 }
 
 const statusColor: Record<string, string> = {
-  complete: "text-green-700 bg-green-50 border-green-200",
-  running: "text-blue-700 bg-blue-50 border-blue-200",
-  pending: "text-slate-700 bg-slate-50 border-slate-200",
-  failed: "text-red-700 bg-red-50 border-red-200",
+  complete: "text-green-700 bg-green-50 border-green-200 dark:text-green-400 dark:bg-green-950/40 dark:border-green-800",
+  running: "text-blue-700 bg-blue-50 border-blue-200 dark:text-blue-400 dark:bg-blue-950/40 dark:border-blue-800",
+  pending: "text-slate-700 bg-slate-50 border-slate-200 dark:text-slate-300 dark:bg-slate-800 dark:border-slate-700",
+  failed: "text-red-700 bg-red-50 border-red-200 dark:text-red-400 dark:bg-red-950/40 dark:border-red-800",
 };
 
 export default async function InvestigationRunPage({
@@ -48,7 +48,7 @@ export default async function InvestigationRunPage({
     <div className="p-8 space-y-6 max-w-5xl">
       {/* Breadcrumb */}
       <div className="text-sm text-slate-500">
-        <Link href="/investigations" className="hover:text-slate-900">Investigations</Link>
+        <Link href="/investigations" className="hover:text-slate-900 dark:hover:text-slate-100">Investigations</Link>
         <span className="mx-2">/</span>
         <span className="font-mono text-xs">{run.id.slice(0, 8)}...</span>
       </div>
@@ -56,8 +56,8 @@ export default async function InvestigationRunPage({
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">{run.ticket.title}</h1>
-          <div className="flex items-center gap-3 mt-2 text-sm text-slate-500">
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">{run.ticket.title}</h1>
+          <div className="flex items-center gap-3 mt-2 text-sm text-slate-500 dark:text-slate-400">
             <span>{run.ticket.customer.company}</span>
             <span>•</span>
             <span>{run.ticket.customer.plan} plan</span>
@@ -83,7 +83,7 @@ export default async function InvestigationRunPage({
                 <CardTitle className="text-base">Drafted Customer Reply</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="prose prose-sm prose-slate max-w-none whitespace-pre-wrap text-sm text-slate-700 leading-relaxed">
+                <div className="prose prose-sm prose-slate dark:prose-invert max-w-none whitespace-pre-wrap text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
                   {run.summary}
                 </div>
               </CardContent>
@@ -100,7 +100,7 @@ export default async function InvestigationRunPage({
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <pre className="text-xs text-slate-700 bg-slate-50 rounded-lg p-4 overflow-auto max-h-64 whitespace-pre-wrap">
+                <pre className="text-xs text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-900 rounded-lg p-4 overflow-auto max-h-64 whitespace-pre-wrap">
                   {run.escalationNote}
                 </pre>
               </CardContent>
@@ -110,9 +110,9 @@ export default async function InvestigationRunPage({
 
         {/* Right: Hypotheses */}
         <div className="space-y-4">
-          <h2 className="text-base font-semibold text-slate-900">Root Cause Hypotheses</h2>
+          <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">Root Cause Hypotheses</h2>
           {hypotheses.length === 0 && run.status !== "complete" && (
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-slate-500 dark:text-slate-400">
               {run.status === "running" ? "Analysis in progress..." : "No hypotheses yet."}
             </p>
           )}

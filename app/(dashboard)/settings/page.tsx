@@ -31,8 +31,8 @@ export default function SettingsPage() {
   return (
     <div className="p-8 space-y-6 max-w-2xl">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">Settings</h1>
-        <p className="text-sm text-slate-500 mt-1">Configure your AI support platform</p>
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Settings</h1>
+        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Configure your AI support platform</p>
       </div>
 
       {/* Model Selection */}
@@ -54,7 +54,7 @@ export default function SettingsPage() {
                 <SelectItem value="claude-3-5-sonnet">Claude Sonnet 4.6</SelectItem>
               </SelectContent>
             </Select>
-            <p className="text-xs text-slate-500">Used for root cause, response drafting, and escalation agents</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400">Used for root cause, response drafting, and escalation agents</p>
           </div>
           <div className="flex gap-2">
             <Badge variant="outline" className="text-xs">OpenAI</Badge>
@@ -78,7 +78,7 @@ export default function SettingsPage() {
             <div key={item.env} className="space-y-1.5">
               <Label>{item.label}</Label>
               <Input type="password" placeholder="Set via environment variable" disabled />
-              <p className="text-xs text-slate-500">{item.desc} — set <code className="bg-slate-100 px-1 rounded">{item.env}</code> in your environment</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">{item.desc} — set <code className="bg-slate-100 dark:bg-slate-800 dark:text-slate-300 px-1 rounded">{item.env}</code> in your environment</p>
             </div>
           ))}
         </CardContent>
@@ -94,12 +94,12 @@ export default function SettingsPage() {
           <CardDescription>Clear all investigation data and restore demo tickets</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <p className="text-sm text-slate-600">
+          <p className="text-sm text-slate-600 dark:text-slate-400">
             This deletes all investigation runs, agent steps, and ticket updates, then re-seeds the database
             with the 7 demo tickets and 10 demo customers.
           </p>
           {resetResult && (
-            <div className="text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg px-3 py-2">
+            <div className="text-sm text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-950/40 border border-green-200 dark:border-green-800 rounded-lg px-3 py-2">
               {resetResult}
             </div>
           )}

@@ -1,9 +1,14 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  experimental: {
-    serverComponentsExternalPackages: ["@prisma/client", "prisma"],
-  },
+  serverExternalPackages: [
+    "@prisma/client",
+    "prisma",
+    "@langchain/langgraph",
+    "@langchain/langgraph-checkpoint",
+    "@langchain/core",
+    "@langchain/openai",
+  ],
 };
 
 export default nextConfig;

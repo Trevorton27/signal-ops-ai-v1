@@ -28,10 +28,10 @@ export function RecentInvestigations({ investigations }: { investigations: Recen
             <CardContent className="p-4">
               <div className="flex items-start justify-between gap-4">
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium text-slate-900 truncate">
+                  <p className="text-sm font-medium text-slate-900 dark:text-slate-100 truncate">
                     {run.ticket.title}
                   </p>
-                  <p className="text-xs text-slate-500 mt-0.5">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                     {run.ticket.customer.company} · {run.ticket.customer.plan} plan
                   </p>
                 </div>
@@ -39,7 +39,7 @@ export function RecentInvestigations({ investigations }: { investigations: Recen
                   <Badge variant="outline" className="text-xs">
                     {run.steps.length} steps
                   </Badge>
-                  <span className="text-xs text-slate-400">
+                  <span className="text-xs text-slate-400 dark:text-slate-500">
                     {run.completedAt ? formatRelativeTime(run.completedAt) : "—"}
                   </span>
                 </div>

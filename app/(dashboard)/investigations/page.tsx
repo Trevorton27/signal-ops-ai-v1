@@ -33,8 +33,8 @@ export default async function InvestigationsPage() {
   return (
     <div className="p-8 space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">Investigations</h1>
-        <p className="text-sm text-slate-500 mt-1">{investigations.length} runs</p>
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Investigations</h1>
+        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{investigations.length} runs</p>
       </div>
 
       <div className="space-y-3">
@@ -55,7 +55,7 @@ export default async function InvestigationsPage() {
               <Card className="hover:shadow-md transition-shadow cursor-pointer">
                 <CardHeader className="pb-2">
                   <div className="flex items-start justify-between gap-4">
-                    <CardTitle className="text-base font-medium text-slate-900 leading-snug">
+                    <CardTitle className="text-base font-medium text-slate-900 dark:text-slate-100 leading-snug">
                       {run.ticket.title}
                     </CardTitle>
                     <Badge variant={statusVariant[run.status] ?? "outline"}>
@@ -64,7 +64,7 @@ export default async function InvestigationsPage() {
                   </div>
                 </CardHeader>
                 <CardContent className="pt-0">
-                  <div className="flex items-center gap-4 text-xs text-slate-500">
+                  <div className="flex items-center gap-4 text-xs text-slate-500 dark:text-slate-400">
                     <span>{run.ticket.customer.company}</span>
                     <span>{run.steps.length} steps</span>
                     {duration && <span>{formatDuration(duration)}</span>}

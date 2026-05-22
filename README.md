@@ -4,6 +4,20 @@ A portfolio-grade multi-agent AI system for automated support ticket investigati
 
 Built with Next.js 15, LangGraph.js, Inngest, Prisma + pgvector, and Clerk.
 
+**In this article**
+
+- [Demo Walkthrough](#demo-walkthrough)
+- [Tech Stack](#tech-stack)
+- [File Structure](#file-structure)
+- [Authentication Flow](#authentication-flow)
+- [Agent Pipeline Data Flow](#agent-pipeline-data-flow)
+- [Database Schema](#database-schema)
+- [RAG Pipeline](#rag-pipeline)
+- [Setup](#setup)
+- [Key Commands](#key-commands)
+- [Optional Integrations](#optional-integrations)
+- [Demo Tickets](#demo-tickets)
+
 ---
 
 ## Demo Walkthrough

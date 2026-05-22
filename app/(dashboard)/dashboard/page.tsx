@@ -61,8 +61,8 @@ export default async function DashboardPage() {
   return (
     <div className="p-8 space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">Dashboard</h1>
-        <p className="text-sm text-slate-500 mt-1">AI-powered support operations overview</p>
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Dashboard</h1>
+        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">AI-powered support operations overview</p>
       </div>
 
       <KpiCards
@@ -73,7 +73,7 @@ export default async function DashboardPage() {
       />
 
       <div>
-        <h2 className="text-lg font-semibold text-slate-900 mb-4">Recent Investigations</h2>
+        <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-4">Recent Investigations</h2>
         <RecentInvestigations investigations={data.recentInvestigations} />
       </div>
     </div>

@@ -58,7 +58,7 @@ export function InvestigationPanel({ ticket, latestRun }: InvestigationPanelProp
         {latestRun ? (
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-xs text-slate-500">Latest run</span>
+              <span className="text-xs text-slate-500 dark:text-slate-400">Latest run</span>
               <Badge
                 variant="outline"
                 className={`text-xs capitalize ${runStatusStyles[latestRun.status] ?? ""}`}
@@ -67,7 +67,7 @@ export function InvestigationPanel({ ticket, latestRun }: InvestigationPanelProp
               </Badge>
             </div>
 
-            <div className="text-xs text-slate-500 flex items-center gap-1.5">
+            <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
               <Clock className="w-3.5 h-3.5" />
               {formatRelativeTime(latestRun.startedAt)}
               <span>· {latestRun.steps.length} steps</span>
@@ -97,11 +97,11 @@ export function InvestigationPanel({ ticket, latestRun }: InvestigationPanelProp
             )}
           </div>
         ) : (
-          <p className="text-xs text-slate-500">No investigation run yet.</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400">No investigation run yet.</p>
         )}
 
         {error && (
-          <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded px-2 py-1.5">
+          <p className="text-xs text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 rounded px-2 py-1.5">
             {error}
           </p>
         )}

@@ -38,12 +38,12 @@ export default async function TicketPage({
     <div className="p-8 space-y-6">
       <div className="flex items-start justify-between">
         <div>
-          <div className="text-sm text-slate-500 mb-1">
-            <a href="/tickets" className="hover:text-slate-900">Tickets</a>
+          <div className="text-sm text-slate-500 dark:text-slate-400 mb-1">
+            <a href="/tickets" className="hover:text-slate-900 dark:hover:text-slate-100">Tickets</a>
             <span className="mx-2">/</span>
             <span>{ticket.externalId}</span>
           </div>
-          <h1 className="text-2xl font-bold text-slate-900">{ticket.title}</h1>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">{ticket.title}</h1>
         </div>
       </div>
 
