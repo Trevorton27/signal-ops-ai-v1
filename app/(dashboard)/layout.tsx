@@ -1,7 +1,7 @@
 import { UserButton, OrganizationSwitcher } from "@clerk/nextjs";
 import { auth } from "@clerk/nextjs/server";
 import Link from "next/link";
-import { LayoutDashboard, Ticket, Search, Settings, Zap, ClipboardCheck, AlertTriangle, FlaskConical, Users } from "lucide-react";
+import { LayoutDashboard, Ticket, Search, Settings, Zap, ClipboardCheck, AlertTriangle, FlaskConical, Users, ShieldCheck } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { prisma } from "@/lib/db";
 
@@ -27,7 +27,8 @@ async function getPendingApprovalCount() {
 }
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const { userId } = await auth();
+  const { userId, orgRole } = await auth();
+  const isAdmin = orgRole === "org:admin";
   const pendingCount = userId ? await getPendingApprovalCount() : 0;
 
   return (
@@ -69,6 +70,15 @@ export default async function DashboardLayout({ children }: { children: React.Re
               )}
             </Link>
           ))}
+          {isAdmin && (
+            <Link
+              href="/admin"
+              className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors"
+            >
+              <ShieldCheck className="w-4 h-4 shrink-0" />
+              <span className="flex-1">Admin</span>
+            </Link>
+          )}
         </nav>
 
         <div className="p-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">

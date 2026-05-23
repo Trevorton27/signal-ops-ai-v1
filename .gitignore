@@ -43,3 +43,7 @@ Thumbs.db
 
 # Inngest
 .inngest/
+.env*
+
+# clerk configuration (can include secrets)
+/.clerk/

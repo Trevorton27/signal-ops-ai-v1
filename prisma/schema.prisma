@@ -28,22 +28,25 @@ model Customer {
 }
 
 model Ticket {
-  id          String   @id @default(cuid())
-  externalId  String?  @unique // for GitHub Issues integration
-  title       String
-  description String
-  status      String   @default("open")   // "open" | "in_progress" | "resolved" | "archived"
-  severity    String   @default("medium") // "critical" | "high" | "medium" | "low"
-  category    String?
-  product     String?
-  customerId  String
-  orgId       String   @default("")
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id            String   @id @default(cuid())
+  externalId    String?  @unique // for GitHub Issues integration
+  title         String
+  description   String
+  status        String   @default("open")   // "open" | "in_progress" | "resolved" | "archived"
+  severity      String   @default("medium") // "critical" | "high" | "medium" | "low"
+  category      String?
+  product       String?
+  customerId    String
+  orgId         String   @default("")
+  duplicateOfId String?                     // set when HF dedup detects a near-duplicate
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   customer       Customer          @relation(fields: [customerId], references: [id])
   investigations InvestigationRun[]
   incidents      IncidentTicket[]
+  duplicateOf    Ticket?           @relation("TicketDuplicates", fields: [duplicateOfId], references: [id])
+  duplicates     Ticket[]          @relation("TicketDuplicates")
 
   @@index([orgId])
 }

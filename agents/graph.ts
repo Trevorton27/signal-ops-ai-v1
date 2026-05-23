@@ -32,6 +32,7 @@ const InvestigationStateAnnotation = Annotation.Root({
   draftReply: Annotation<string>({ reducer: (_, b) => b, default: () => "" }),
   escalationNote: Annotation<string>({ reducer: (_, b) => b, default: () => "" }),
   guardrailsResult: Annotation<InvestigationState["guardrailsResult"]>({ reducer: (_, b) => b, default: () => null }), // Phase 2
+  urgencyScore: Annotation<number | null>({ reducer: (_, b) => b, default: () => null }),
 });
 
 type GraphState = typeof InvestigationStateAnnotation.State;

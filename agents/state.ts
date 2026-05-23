@@ -106,4 +106,5 @@ export interface InvestigationState {
   draftReply: string;
   escalationNote: string;
   guardrailsResult: GuardrailsResult | null; // Phase 2
+  urgencyScore: number | null; // HF sentiment score — 0 (calm) to 1 (urgent/negative)
 }

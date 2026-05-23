@@ -2,7 +2,53 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/db";
 import { inngest } from "@/inngest/client";
+import { getEnv } from "@/lib/env";
 import { z } from "zod";
+
+function cosineSimilarity(a: number[], b: number[]): number {
+  let dot = 0, normA = 0, normB = 0;
+  for (let i = 0; i < a.length; i++) {
+    dot += a[i] * b[i];
+    normA += a[i] * a[i];
+    normB += b[i] * b[i];
+  }
+  return dot / (Math.sqrt(normA) * Math.sqrt(normB));
+}
+
+async function findDuplicateTicketId(
+  newText: string,
+  recentTickets: { id: string; title: string; description: string }[],
+  apiKey: string
+): Promise<string | null> {
+  if (recentTickets.length === 0) return null;
+  try {
+    const inputs = [newText, ...recentTickets.map((t) => `${t.title} ${t.description.slice(0, 100)}`)];
+    const res = await fetch(
+      "https://api-inference.huggingface.co/models/sentence-transformers/all-MiniLM-L6-v2",
+      {
+        method: "POST",
+        headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ inputs, options: { wait_for_model: true } }),
+      }
+    );
+    if (!res.ok) return null;
+    const embeddings = (await res.json()) as number[][];
+    if (!Array.isArray(embeddings) || embeddings.length < 2) return null;
+    const [newEmb, ...restEmbs] = embeddings;
+    let bestScore = 0;
+    let bestId: string | null = null;
+    for (let i = 0; i < restEmbs.length; i++) {
+      const sim = cosineSimilarity(newEmb, restEmbs[i]);
+      if (sim > bestScore) {
+        bestScore = sim;
+        bestId = recentTickets[i].id;
+      }
+    }
+    return bestScore >= 0.92 ? bestId : null;
+  } catch {
+    return null;
+  }
+}
 
 const createTicketSchema = z.object({
   title: z.string().min(1).max(500),
@@ -57,10 +103,26 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
   }
 
+  // HF dedup check — gracefully skipped if key not set
+  let duplicateOfId: string | undefined;
+  const hfKey = getEnv().HUGGING_FACE_API_KEY;
+  if (hfKey) {
+    const recentTickets = await prisma.ticket.findMany({
+      where: { status: { in: ["open", "in_progress"] } },
+      select: { id: true, title: true, description: true },
+      orderBy: { createdAt: "desc" },
+      take: 50,
+    });
+    const newText = `${parsed.data.title} ${parsed.data.description.slice(0, 200)}`;
+    const dupId = await findDuplicateTicketId(newText, recentTickets, hfKey);
+    if (dupId) duplicateOfId = dupId;
+  }
+
   const ticket = await prisma.ticket.create({
     data: {
       ...parsed.data,
       externalId: `TKT-${Date.now()}`,
+      ...(duplicateOfId ? { duplicateOfId } : {}),
     },
     include: { customer: true },
   });
@@ -71,5 +133,5 @@ export async function POST(request: NextRequest) {
     data: { ticketId: ticket.id },
   });
 
-  return NextResponse.json(ticket, { status: 201 });
+  return NextResponse.json({ ...ticket, duplicateOf: duplicateOfId ?? null }, { status: 201 });
 }
