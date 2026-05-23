@@ -10,6 +10,7 @@ import { incidentCorrelationAgent } from "./nodes/incident-correlation-agent";
 import { deploymentCorrelationAgent } from "./nodes/deployment-correlation-agent";
 import { rootCauseAgent } from "./nodes/root-cause-agent";
 import { responseAgent } from "./nodes/response-agent";
+import { guardrailsAgent } from "./nodes/guardrails-agent";
 import { escalationAgent } from "./nodes/escalation-agent";
 import type { InvestigationState } from "./state";
 
@@ -30,6 +31,7 @@ const InvestigationStateAnnotation = Annotation.Root({
   hypotheses: Annotation<InvestigationState["hypotheses"]>({ reducer: (_, b) => b, default: () => [] }),
   draftReply: Annotation<string>({ reducer: (_, b) => b, default: () => "" }),
   escalationNote: Annotation<string>({ reducer: (_, b) => b, default: () => "" }),
+  guardrailsResult: Annotation<InvestigationState["guardrailsResult"]>({ reducer: (_, b) => b, default: () => null }), // Phase 2
 });
 
 type GraphState = typeof InvestigationStateAnnotation.State;
@@ -68,13 +70,15 @@ export async function runInvestigation(ticketId: string, runId: string): Promise
       .addNode("parallel_analysis", parallelAnalysis)
       .addNode("root_cause", (s: GraphState) => rootCauseAgent(s as unknown as InvestigationState) as Promise<Partial<GraphState>>)
       .addNode("response_drafting", (s: GraphState) => responseAgent(s as unknown as InvestigationState) as Promise<Partial<GraphState>>)
+      .addNode("guardrails", (s: GraphState) => guardrailsAgent(s as unknown as InvestigationState) as Promise<Partial<GraphState>>) // Phase 2
       .addNode("escalation", (s: GraphState) => escalationAgent(s as unknown as InvestigationState) as Promise<Partial<GraphState>>)
       .addEdge("__start__", "intake")
       .addEdge("intake", "customer_context")
       .addEdge("customer_context", "parallel_analysis")
       .addEdge("parallel_analysis", "root_cause")
       .addEdge("root_cause", "response_drafting")
-      .addEdge("response_drafting", "escalation")
+      .addEdge("response_drafting", "guardrails") // Phase 2
+      .addEdge("guardrails", "escalation")
       .addEdge("escalation", END);
 
     const app = graph.compile();
@@ -86,17 +90,7 @@ export async function runInvestigation(ticketId: string, runId: string): Promise
       customer: ticket.customer,
     });
 
-    await prisma.investigationRun.update({
-      where: { id: runId },
-      data: { status: "complete", completedAt: new Date() },
-    });
-
-    await prisma.ticket.update({
-      where: { id: ticketId },
-      data: { status: "in_progress" },
-    });
-
-    logger.info("Investigation complete", { ticketId, runId });
+    logger.info("Investigation graph complete", { ticketId, runId });
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error);
     logger.error("Investigation failed", { ticketId, runId, error: msg });

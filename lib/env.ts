@@ -7,12 +7,19 @@ const envSchema = z.object({
   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string().min(1),
   INNGEST_EVENT_KEY: z.string().default("local"),
   INNGEST_SIGNING_KEY: z.string().optional(),
-  // Optional integrations
+  // Optional integrations (already existing)
   ANTHROPIC_API_KEY: z.string().optional(),
   GITHUB_TOKEN: z.string().optional(),
   SENTRY_AUTH_TOKEN: z.string().optional(),
   JIRA_API_TOKEN: z.string().optional(),
   JIRA_BASE_URL: z.string().optional(),
+  // Phase 4: HuggingFace reranker
+  HUGGING_FACE_API_KEY: z.string().optional(),
+  // Phase 5: Integration adapters
+  SLACK_WEBHOOK_URL: z.string().optional(),
+  DATADOG_API_KEY: z.string().optional(),
+  ZENDESK_API_TOKEN: z.string().optional(),
+  ZENDESK_SUBDOMAIN: z.string().optional(),
 });
 
 function parseEnv() {

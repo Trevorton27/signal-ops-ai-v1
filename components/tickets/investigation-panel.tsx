@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Play, ExternalLink, Clock } from "lucide-react";
+import { Play, ExternalLink, Clock, ShieldAlert } from "lucide-react";
 import { formatRelativeTime } from "@/lib/utils";
 import type { Ticket, InvestigationRun, AgentStep } from "@prisma/client";
 
@@ -17,10 +17,11 @@ interface InvestigationPanelProps {
 }
 
 const runStatusStyles: Record<string, string> = {
-  pending: "text-slate-600 bg-slate-50 border-slate-200",
-  running: "text-blue-600 bg-blue-50 border-blue-200",
-  complete: "text-green-700 bg-green-50 border-green-200",
-  failed: "text-red-600 bg-red-50 border-red-200",
+  pending:           "text-slate-600 bg-slate-50 border-slate-200",
+  running:           "text-blue-600 bg-blue-50 border-blue-200",
+  complete:          "text-green-700 bg-green-50 border-green-200",
+  failed:            "text-red-600 bg-red-50 border-red-200",
+  awaiting_approval: "text-amber-700 bg-amber-50 border-amber-200",
 };
 
 export function InvestigationPanel({ ticket, latestRun }: InvestigationPanelProps) {
@@ -49,6 +50,8 @@ export function InvestigationPanel({ ticket, latestRun }: InvestigationPanelProp
     }
   }
 
+  const isPendingApproval = latestRun?.approvalStatus === "pending";
+
   return (
     <Card>
       <CardHeader className="pb-3">
@@ -63,7 +66,7 @@ export function InvestigationPanel({ ticket, latestRun }: InvestigationPanelProp
                 variant="outline"
                 className={`text-xs capitalize ${runStatusStyles[latestRun.status] ?? ""}`}
               >
-                {latestRun.status}
+                {latestRun.status.replace(/_/g, " ")}
               </Badge>
             </div>
 
@@ -73,15 +76,26 @@ export function InvestigationPanel({ ticket, latestRun }: InvestigationPanelProp
               <span>· {latestRun.steps.length} steps</span>
             </div>
 
-            {latestRun.status === "complete" && (
+            {isPendingApproval && (
+              <div className="flex items-center gap-1.5 text-xs text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 rounded px-2 py-1.5">
+                <ShieldAlert className="w-3.5 h-3.5 shrink-0" />
+                Awaiting human approval
+              </div>
+            )}
+
+            {(latestRun.status === "complete" || isPendingApproval) && (
               <Button
                 variant="outline"
                 size="sm"
                 className="w-full"
-                onClick={() => router.push(`/investigations/${latestRun.id}`)}
+                onClick={() =>
+                  isPendingApproval
+                    ? router.push(`/approvals/${latestRun.id}`)
+                    : router.push(`/investigations/${latestRun.id}`)
+                }
               >
                 <ExternalLink className="w-3.5 h-3.5 mr-1.5" />
-                View Full Report
+                {isPendingApproval ? "Review & Approve" : "View Full Report"}
               </Button>
             )}
 

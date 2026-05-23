@@ -18,10 +18,13 @@ model Customer {
   region       String   // "us-east-1" | "eu-west-1" | etc.
   industry     String
   accountAge   Int      // months
+  orgId        String   @default("")
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
   tickets      Ticket[]
+
+  @@index([orgId])
 }
 
 model Ticket {
@@ -29,44 +32,68 @@ model Ticket {
   externalId  String?  @unique // for GitHub Issues integration
   title       String
   description String
-  status      String   @default("open")  // "open" | "in_progress" | "resolved" | "archived"
+  status      String   @default("open")   // "open" | "in_progress" | "resolved" | "archived"
   severity    String   @default("medium") // "critical" | "high" | "medium" | "low"
   category    String?
   product     String?
   customerId  String
+  orgId       String   @default("")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  customer     Customer          @relation(fields: [customerId], references: [id])
+  customer       Customer          @relation(fields: [customerId], references: [id])
   investigations InvestigationRun[]
+  incidents      IncidentTicket[]
+
+  @@index([orgId])
 }
 
 model InvestigationRun {
-  id           String   @id @default(cuid())
-  ticketId     String
-  status       String   @default("pending") // "pending" | "running" | "complete" | "failed"
-  hypotheses   Json?
-  summary      String?  // drafted customer reply
+  id             String    @id @default(cuid())
+  ticketId       String
+  status         String    @default("pending") // "pending" | "running" | "awaiting_approval" | "complete" | "failed"
+  hypotheses     Json?
+  summary        String?   // drafted customer reply
   escalationNote String?
-  startedAt    DateTime @default(now())
-  completedAt  DateTime?
-  errorMessage String?
+  startedAt      DateTime  @default(now())
+  completedAt    DateTime?
+  errorMessage   String?
+  orgId          String    @default("")
 
-  ticket       Ticket       @relation(fields: [ticketId], references: [id])
-  steps        AgentStep[]
+  // Phase 2: Guardrails
+  guardrailsPassed Boolean @default(true)
+  guardrailsResult Json?
+
+  // Phase 3: HITL Approval
+  approvalStatus String?   // "pending" | "approved" | "rejected" | "timeout"
+  approvedAt     DateTime?
+  approvedBy     String?   // Clerk userId
+  editedReply    String?   // human-edited version of summary
+  reviewerNote   String?
+
+  ticket           Ticket          @relation(fields: [ticketId], references: [id])
+  steps            AgentStep[]
+  approvalRequests ApprovalAudit[]
+
+  @@index([orgId])
 }
 
 model AgentStep {
-  id               String   @id @default(cuid())
+  id                 String    @id @default(cuid())
   investigationRunId String
-  agentName        String
-  status           String   @default("pending") // "pending" | "running" | "complete" | "failed"
-  input            Json?
-  output           Json?
-  errorMessage     String?
-  startedAt        DateTime @default(now())
-  completedAt      DateTime?
-  durationMs       Int?
+  agentName          String
+  status             String    @default("pending") // "pending" | "running" | "complete" | "failed"
+  input              Json?
+  output             Json?
+  errorMessage       String?
+  startedAt          DateTime  @default(now())
+  completedAt        DateTime?
+  durationMs         Int?
+
+  // Phase 1: Agent Control Center telemetry
+  tokenUsage      Json?  // { promptTokens, completionTokens, totalTokens }
+  toolsCalled     Json?  // string[]
+  confidenceScore Float? // 0.0–1.0
 
   investigationRun InvestigationRun @relation(fields: [investigationRunId], references: [id])
 }
@@ -80,4 +107,116 @@ model KnowledgeChunk {
   createdAt   DateTime                     @default(now())
 
   @@unique([sourcePath, chunkIndex])
+}
+
+// Phase 3: HITL Approval Audit Trail
+model ApprovalAudit {
+  id                 String   @id @default(cuid())
+  investigationRunId String
+  action             String   // "approved" | "rejected" | "edited"
+  actorId            String   // Clerk userId
+  originalDraft      String
+  finalDraft         String?
+  note               String?
+  createdAt          DateTime @default(now())
+
+  investigationRun InvestigationRun @relation(fields: [investigationRunId], references: [id])
+}
+
+// Phase 5: Integration Config
+model IntegrationConfig {
+  id         String    @id @default(cuid())
+  type       String    // "sentry" | "datadog" | "slack" | "zendesk" | "jira" | "github"
+  enabled    Boolean   @default(false)
+  config     Json      // non-secret metadata (project IDs, labels, etc.)
+  lastSyncAt DateTime?
+  orgId      String    @default("")
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@index([orgId])
+}
+
+// Phase 6: Incident Management
+model Incident {
+  id                  String    @id @default(cuid())
+  title               String
+  status              String    @default("investigating") // "investigating" | "identified" | "monitoring" | "resolved"
+  severity            String    // "P0" | "P1" | "P2"
+  affectedProduct     String
+  affectedRegion      String
+  rootCauseHypothesis String?
+  statusPageMessage   String?
+  internalTimeline    Json?     // { timestamp, event, author }[]
+  orgId               String    @default("")
+  startedAt           DateTime  @default(now())
+  resolvedAt          DateTime?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  tickets IncidentTicket[]
+
+  @@index([orgId])
+}
+
+model IncidentTicket {
+  id         String   @id @default(cuid())
+  incidentId String
+  ticketId   String
+  addedAt    DateTime @default(now())
+
+  incident Incident @relation(fields: [incidentId], references: [id])
+  ticket   Ticket   @relation(fields: [ticketId], references: [id])
+
+  @@unique([incidentId, ticketId])
+}
+
+// Phase 4 + Phase 7: Eval
+model EvalExample {
+  id                       String   @id @default(cuid())
+  sourceRunId              String?
+  ticketTitle              String
+  ticketDescription        String
+  expectedRootCause        String
+  expectedSeverity         String
+  expectedEvidenceKeywords Json     // string[]
+  approvedReply            String
+  evidenceChunks           Json     // top chunks + rerank scores
+  orgId                    String   @default("")
+  createdAt                DateTime @default(now())
+
+  evalResults EvalResult[]
+
+  @@index([orgId])
+}
+
+model EvalRun {
+  id          String    @id @default(cuid())
+  name        String
+  triggeredBy String
+  status      String    @default("running") // "running" | "complete" | "failed"
+  passRate    Float?
+  avgScore    Float?
+  startedAt   DateTime  @default(now())
+  completedAt DateTime?
+
+  results EvalResult[]
+}
+
+model EvalResult {
+  id                 String   @id @default(cuid())
+  evalRunId          String
+  evalExampleId      String
+  investigationRunId String?
+  rootCauseScore     Float?
+  evidenceScore      Float?
+  toneScore          Float?
+  hallucinationScore Float?
+  overallScore       Float?
+  judgeOutput        Json?
+  passed             Boolean
+  createdAt          DateTime @default(now())
+
+  evalRun     EvalRun     @relation(fields: [evalRunId], references: [id])
+  evalExample EvalExample @relation(fields: [evalExampleId], references: [id])
 }

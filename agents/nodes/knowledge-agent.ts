@@ -4,6 +4,7 @@ import OpenAI from "openai";
 import { getEnv } from "@/lib/env";
 import { prisma } from "@/lib/db";
 import { createLogger } from "@/lib/logger";
+import { extractTokenUsage } from "@/lib/agent-utils";
 import { searchDocs } from "../tools/docs-tool";
 import type { InvestigationState } from "../state";
 
@@ -13,6 +14,7 @@ export async function knowledgeAgent(
   state: InvestigationState
 ): Promise<Partial<InvestigationState>> {
   const stepStart = Date.now();
+  const model = "gpt-4o-mini";
 
   const step = await prisma.agentStep.create({
     data: {
@@ -28,6 +30,7 @@ export async function knowledgeAgent(
       ? `${state.ticket.title} ${state.classification.affectedProduct} ${state.classification.category}`
       : state.ticket.title;
 
+    // Phase 4: searchDocs now includes reranking via HuggingFace cross-encoder
     const chunks = await searchDocs(query, 5);
 
     const systemPrompt = readFileSync(
@@ -38,11 +41,11 @@ export async function knowledgeAgent(
     const client = new OpenAI({ apiKey: getEnv().OPENAI_API_KEY });
 
     const chunksText = chunks
-      .map((c, i) => `### Source: ${c.sourcePath} (chunk ${c.chunkIndex})\n${c.content}`)
+      .map((c, i) => `### Source: ${c.sourcePath} (chunk ${c.chunkIndex})${c.rerankScore !== undefined ? ` [rerank: ${c.rerankScore.toFixed(3)}]` : ""}\n${c.content}`)
       .join("\n\n---\n\n");
 
     const response = await client.chat.completions.create({
-      model: "gpt-4o-mini",
+      model,
       response_format: { type: "json_object" },
       messages: [
         { role: "system", content: systemPrompt },
@@ -54,15 +57,25 @@ export async function knowledgeAgent(
     });
 
     const knowledge = JSON.parse(response.choices[0].message.content || "{}");
+    const tokenUsage = extractTokenUsage(response);
     logger.info("Knowledge retrieval complete", { chunksFound: chunks.length });
+
+    const topRerankScore = chunks[0]?.rerankScore;
 
     await prisma.agentStep.update({
       where: { id: step.id },
       data: {
         status: "complete",
-        output: { ...knowledge, chunksRetrieved: chunks.length, sources: chunks.map((c) => c.sourcePath) },
+        output: {
+          ...knowledge,
+          chunksRetrieved: chunks.length,
+          sources: chunks.map((c) => c.sourcePath),
+          rerankScores: chunks.map((c) => c.rerankScore ?? null),
+          topRerankScore: topRerankScore ?? null,
+        },
         completedAt: new Date(),
         durationMs: Date.now() - stepStart,
+        tokenUsage: tokenUsage ? JSON.parse(JSON.stringify(tokenUsage)) : null,
       },
     });
 

@@ -16,6 +16,10 @@ async function getTicket(ticketId: string) {
           steps: { orderBy: { startedAt: "asc" } },
         },
       },
+      incidents: {
+        include: { incident: true },
+        take: 1,
+      },
     },
   });
 }
@@ -33,6 +37,7 @@ export default async function TicketPage({
   if (!ticket) notFound();
 
   const latestRun = ticket.investigations[0] ?? null;
+  const linkedIncident = ticket.incidents[0]?.incident ?? null;
 
   return (
     <div className="p-8 space-y-6">
@@ -49,7 +54,7 @@ export default async function TicketPage({
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
-          <TicketDetail ticket={ticket} />
+          <TicketDetail ticket={ticket} linkedIncident={linkedIncident} />
         </div>
         <div>
           <InvestigationPanel ticket={ticket} latestRun={latestRun} />

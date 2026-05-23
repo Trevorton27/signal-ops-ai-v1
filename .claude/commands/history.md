@@ -1,0 +1,1 @@
+output a list of all prompts input by the user in current session. prompts should render as a list with only the first 120 characters visible as a preview. when the user clicks on a list item, it should expand to reveal the entire prompt as well as any important information regarding what was implemented, changes in functionality etc.

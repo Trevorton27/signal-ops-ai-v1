@@ -4,6 +4,7 @@ import OpenAI from "openai";
 import { getEnv } from "@/lib/env";
 import { prisma } from "@/lib/db";
 import { createLogger } from "@/lib/logger";
+import { extractTokenUsage } from "@/lib/agent-utils";
 import type { InvestigationState, Hypothesis } from "../state";
 
 const logger = createLogger("root-cause-agent");
@@ -12,6 +13,7 @@ export async function rootCauseAgent(
   state: InvestigationState
 ): Promise<Partial<InvestigationState>> {
   const stepStart = Date.now();
+  const model = "gpt-4o";
 
   const step = await prisma.agentStep.create({
     data: {
@@ -57,11 +59,11 @@ ${state.incidents.map((i) => `- ${i.title} (${i.status}): ${i.rootCause}`).join(
 ${state.deployments.slice(0, 5).map((d) => `- ${d.service} ${d.version} at ${d.timestamp}: ${d.notes}`).join("\n") || "None found"}
 
 ## Knowledge Base Findings
-${state.knowledgeChunks.slice(0, 3).map((c) => c.content.slice(0, 200)).join("\n---\n")}
+${state.knowledgeChunks.slice(0, 3).map((c) => `[Source: ${c.sourcePath}${c.rerankScore !== undefined ? `, rerank: ${c.rerankScore.toFixed(3)}` : ""}]\n${c.content.slice(0, 200)}`).join("\n---\n")}
     `.trim();
 
     const response = await client.chat.completions.create({
-      model: "gpt-4o",
+      model,
       response_format: { type: "json_object" },
       messages: [
         { role: "system", content: systemPrompt },
@@ -71,13 +73,13 @@ ${state.knowledgeChunks.slice(0, 3).map((c) => c.content.slice(0, 200)).join("\n
 
     const result = JSON.parse(response.choices[0].message.content || "{}");
     const hypotheses: Hypothesis[] = result.hypotheses || [];
+    const tokenUsage = extractTokenUsage(response);
 
     logger.info("Root cause analysis complete", {
       hypothesesCount: hypotheses.length,
       topConfidence: hypotheses[0]?.confidence,
     });
 
-    // Update the InvestigationRun with hypotheses
     await prisma.investigationRun.update({
       where: { id: state.runId },
       data: { hypotheses: JSON.parse(JSON.stringify(hypotheses)) },
@@ -90,6 +92,8 @@ ${state.knowledgeChunks.slice(0, 3).map((c) => c.content.slice(0, 200)).join("\n
         output: result,
         completedAt: new Date(),
         durationMs: Date.now() - stepStart,
+        tokenUsage: tokenUsage ? JSON.parse(JSON.stringify(tokenUsage)) : null,
+        confidenceScore: hypotheses[0]?.confidence ? hypotheses[0].confidence / 100 : null,
       },
     });
 

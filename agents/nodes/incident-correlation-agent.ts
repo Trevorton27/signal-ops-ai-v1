@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/db";
 import { createLogger } from "@/lib/logger";
 import { fetchIncidents } from "../tools/incident-tool";
+import { getSentryAdapter } from "@/lib/integrations/sentry";
 import type { InvestigationState } from "../state";
 
 const logger = createLogger("incident-correlation-agent");
@@ -29,6 +30,12 @@ export async function incidentCorrelationAgent(
       ticketCreatedAt: state.ticket.createdAt.toISOString(),
     });
 
+    // Phase 5: Supplement with Sentry issues
+    const sentryAdapter = getSentryAdapter();
+    const sentryIssues = await Promise.resolve(
+      sentryAdapter.getIssues("demo-org", "payment-service")
+    );
+
     const output = {
       incidentsFound: incidents.length,
       incidents: incidents.map((i) => ({
@@ -39,9 +46,19 @@ export async function incidentCorrelationAgent(
         startTime: i.startTime,
         rootCause: i.rootCause,
       })),
+      sentryIssues: sentryIssues.slice(0, 3).map((s) => ({
+        id: s.id,
+        title: s.title,
+        level: s.level,
+        count: s.count,
+        lastSeen: s.lastSeen,
+      })),
     };
 
-    logger.info("Incident correlation complete", { incidentsFound: incidents.length });
+    logger.info("Incident correlation complete", {
+      incidentsFound: incidents.length,
+      sentryIssues: sentryIssues.length,
+    });
 
     await prisma.agentStep.update({
       where: { id: step.id },

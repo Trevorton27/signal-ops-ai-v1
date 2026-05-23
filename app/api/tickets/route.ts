@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/db";
+import { inngest } from "@/inngest/client";
 import { z } from "zod";
 
 const createTicketSchema = z.object({
@@ -62,6 +63,12 @@ export async function POST(request: NextRequest) {
       externalId: `TKT-${Date.now()}`,
     },
     include: { customer: true },
+  });
+
+  // Phase 6: Fire ticket/created event for clustering
+  await inngest.send({
+    name: "ticket/created",
+    data: { ticketId: ticket.id },
   });
 
   return NextResponse.json(ticket, { status: 201 });

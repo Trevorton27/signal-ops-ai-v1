@@ -1,4 +1,4 @@
-import type { Ticket, Customer, InvestigationRun } from "@prisma/client";
+import type { Ticket, Customer } from "@prisma/client";
 
 export interface LogEntry {
   id: string;
@@ -23,7 +23,8 @@ export interface TraceSpan {
   tags?: Record<string, unknown>;
 }
 
-export interface Incident {
+// Renamed from Incident to avoid conflict with the Prisma Incident model (Phase 6)
+export interface CorrelatedIncident {
   id: string;
   title: string;
   status: string;
@@ -60,12 +61,29 @@ export interface Hypothesis {
   affectedService?: string;
 }
 
+// Phase 4: EvidenceChunk extends knowledge chunk with reranking metadata
 export interface KnowledgeChunk {
   id: string;
   sourcePath: string;
   chunkIndex: number;
   content: string;
   similarity?: number;
+  rerankScore?: number;  // HuggingFace cross-encoder score
+  citedBy?: string[];   // agent names that referenced this chunk
+}
+
+// Phase 2: Guardrails types
+export interface GuardrailFlag {
+  type: "pii" | "secret" | "low_confidence" | "unsupported_claim" | "internal_leak";
+  severity: "warn" | "block";
+  description: string;
+  location: string;
+}
+
+export interface GuardrailsResult {
+  passed: boolean;
+  flags: GuardrailFlag[];
+  revisedDraft?: string;
 }
 
 export interface InvestigationState {
@@ -82,9 +100,10 @@ export interface InvestigationState {
   logs: LogEntry[];
   traces: TraceSpan[];
   knowledgeChunks: KnowledgeChunk[];
-  incidents: Incident[];
+  incidents: CorrelatedIncident[];
   deployments: Deployment[];
   hypotheses: Hypothesis[];
   draftReply: string;
   escalationNote: string;
+  guardrailsResult: GuardrailsResult | null; // Phase 2
 }

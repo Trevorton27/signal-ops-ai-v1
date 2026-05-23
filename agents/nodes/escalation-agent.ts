@@ -4,6 +4,7 @@ import OpenAI from "openai";
 import { getEnv } from "@/lib/env";
 import { prisma } from "@/lib/db";
 import { createLogger } from "@/lib/logger";
+import { extractTokenUsage } from "@/lib/agent-utils";
 import { postEscalation } from "../tools/escalation-tool";
 import type { InvestigationState } from "../state";
 
@@ -13,6 +14,7 @@ export async function escalationAgent(
   state: InvestigationState
 ): Promise<Partial<InvestigationState>> {
   const stepStart = Date.now();
+  const model = "gpt-4o";
 
   const step = await prisma.agentStep.create({
     data: {
@@ -54,7 +56,7 @@ ${state.ticket.createdAt.toISOString()}
     `.trim();
 
     const response = await client.chat.completions.create({
-      model: "gpt-4o",
+      model,
       response_format: { type: "json_object" },
       messages: [
         { role: "system", content: systemPrompt },
@@ -64,8 +66,8 @@ ${state.ticket.createdAt.toISOString()}
 
     const escalationData = JSON.parse(response.choices[0].message.content || "{}");
     const escalationNote = JSON.stringify(escalationData, null, 2);
+    const tokenUsage = extractTokenUsage(response);
 
-    // Attempt to post to external system if configured
     const externalResult = await postEscalation({
       title: escalationData.title || state.ticket.title,
       severity: escalationData.severity || state.ticket.severity,
@@ -77,7 +79,6 @@ ${state.ticket.createdAt.toISOString()}
     const outputData = { ...escalationData, externalUrl: externalResult.url, externalId: externalResult.id };
     logger.info("Escalation note generated", { priority: escalationData.priority, externalUrl: externalResult.url });
 
-    // Save escalation note to InvestigationRun
     await prisma.investigationRun.update({
       where: { id: state.runId },
       data: { escalationNote },
@@ -90,6 +91,7 @@ ${state.ticket.createdAt.toISOString()}
         output: outputData,
         completedAt: new Date(),
         durationMs: Date.now() - stepStart,
+        tokenUsage: tokenUsage ? JSON.parse(JSON.stringify(tokenUsage)) : null,
       },
     });
 

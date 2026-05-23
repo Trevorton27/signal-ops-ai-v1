@@ -1,12 +1,12 @@
 import incidentsData from "@/data/incidents.json";
-import type { Incident } from "../state";
+import type { CorrelatedIncident } from "../state";
 
 export function fetchIncidents(filter: {
   affectedProduct?: string;
   region?: string;
   ticketCreatedAt?: string;
-}): Incident[] {
-  let incidents = incidentsData as Incident[];
+}): CorrelatedIncident[] {
+  let incidents = incidentsData as CorrelatedIncident[];
 
   if (filter.affectedProduct) {
     incidents = incidents.filter((i) =>

@@ -4,12 +4,14 @@ import OpenAI from "openai";
 import { getEnv } from "@/lib/env";
 import { prisma } from "@/lib/db";
 import { createLogger } from "@/lib/logger";
+import { extractTokenUsage } from "@/lib/agent-utils";
 import type { InvestigationState } from "../state";
 
 const logger = createLogger("intake-agent");
 
 export async function intakeAgent(state: InvestigationState): Promise<Partial<InvestigationState>> {
   const stepStart = Date.now();
+  const model = "gpt-4o-mini";
 
   const step = await prisma.agentStep.create({
     data: {
@@ -29,7 +31,7 @@ export async function intakeAgent(state: InvestigationState): Promise<Partial<In
     const client = new OpenAI({ apiKey: getEnv().OPENAI_API_KEY });
 
     const response = await client.chat.completions.create({
-      model: "gpt-4o-mini",
+      model,
       response_format: { type: "json_object" },
       messages: [
         { role: "system", content: systemPrompt },
@@ -41,6 +43,7 @@ export async function intakeAgent(state: InvestigationState): Promise<Partial<In
     });
 
     const classification = JSON.parse(response.choices[0].message.content || "{}");
+    const tokenUsage = extractTokenUsage(response);
     logger.info("Intake classification complete", { classification });
 
     await prisma.agentStep.update({
@@ -50,6 +53,7 @@ export async function intakeAgent(state: InvestigationState): Promise<Partial<In
         output: classification,
         completedAt: new Date(),
         durationMs: Date.now() - stepStart,
+        tokenUsage: tokenUsage ? JSON.parse(JSON.stringify(tokenUsage)) : null,
       },
     });
 
