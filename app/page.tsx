@@ -2,6 +2,7 @@ import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { AboutModal } from "@/components/about-modal";
 
 export default async function HomePage() {
   const { userId } = await auth();
@@ -38,7 +39,11 @@ export default async function HomePage() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-3 gap-6 pt-8 text-left">
+        <div className="flex justify-center pt-2">
+          <AboutModal />
+        </div>
+
+        <div className="grid grid-cols-3 gap-6 pt-4 text-left">
           {[
             { label: "Agents", value: "8", desc: "Specialized AI agents running in parallel" },
             { label: "Avg Resolution", value: "< 30s", desc: "From ticket submission to investigation complete" },
